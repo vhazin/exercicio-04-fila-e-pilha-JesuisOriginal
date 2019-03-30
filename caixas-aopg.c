@@ -16,7 +16,8 @@ int main(void)
     {
         scanf("%d %d", &n, &p); // recupera a qtd de caixas(n) e a qtd de pilhas(p)
        // printf("n=%d p=%d\n", n, p);
-        if (p == n && p == 0) { //End Program Signal P = N = 0
+        if (p < 1 || p > n || n > 1000) exit -1;
+        if (p == n && p == 0 ) { //End Program Signal P = N = 0
             return 0;
         } else {
             Caixa pilhas[p];
