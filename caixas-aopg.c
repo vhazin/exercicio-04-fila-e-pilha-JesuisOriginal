@@ -7,17 +7,17 @@ typedef struct node
 
 } Caixa;
 
-void ftirou(Caixa pilha[], int caixa1_data[], int p);
+void ftirou(Caixa pilha[], int caixa1_data[], int p, int n);
 
 int main(void)
 {
-    int n = 1, p = 0, caixa1_data[2]; // data guarda em 0 a pilha, e em 1 a altura da Caixa1
+    int n = 3, p = 2, caixa1_data[2]; // data guarda em 0 a pilha, e em 1 a altura da Caixa1
     do  // executa uma vez obrigatoriamente
     {
         scanf("%d %d", &n, &p); // recupera a qtd de caixas(n) e a qtd de pilhas(p)
-       // printf("n=%d p=%d\n", n, p);
-        if (p < 1 || p > n || n > 1000) exit -1;
-        if (p == n && p == 0 ) { //End Program Signal P = N = 0
+        // printf("n=%d p=%d\n", n, p);
+        if (p < 1 || n < p || n > 1000) exit -1;
+        if (p == 0 || n == 0) { //End Program Signal P = N = 0
             return 0;
         } else {
             Caixa pilhas[p];
@@ -25,10 +25,12 @@ int main(void)
             for (int pilha_atu = 0; pilha_atu < p; pilha_atu++) {
                 int id, h = pilha_atu+1, size_pilha;
                 scanf("%d", &size_pilha);
+                if (size_pilha < 1 || size_pilha == 0) exit(-1);
                 pilhas[pilha_atu].h = size_pilha;
                // printf("%d ", size_pilha);
                 for (int tam_atual = 0; tam_atual < size_pilha; tam_atual++){
                     scanf("%d", &id);
+                    if (id == 0 || id > 1000) exit -1;
                    // printf("%d ", id);
                     if (id == 1) {
                         caixa1_data[0] = pilha_atu; 
@@ -39,7 +41,7 @@ int main(void)
             }
            // printf("caixa1.h=%d \n", caixa1_data[1]);
            // printf("Tirou \n");
-            ftirou(pilhas, caixa1_data, p);
+            ftirou(pilhas, caixa1_data, p, n);
             // if (pilhas[caixa1_data[0]-1].h < pilhas[caixa1_data[0]+1].h ) {
             //     tirou = pilhas[caixa1_data[0]].h - (caixa1_data[1] + 1); // quantas tem q remover de cima de caixa1
             //     tirou += pilhas[caixa1_data[0]-1].h - caixa1_data[1]; //quntas tem que tira do lado esuqerdo
@@ -57,7 +59,7 @@ int main(void)
    // printf("Condition End Met\n");
 }
 
-void ftirou(Caixa pilha[], int caixa1_data[], int p)
+void ftirou(Caixa pilha[], int caixa1_data[], int p, int n)
 {
    // printf("new caixa1_data[0]=%d  caixa1_data[1]=%d p=%d\n", caixa1_data[0], caixa1_data[1], p);
    // printf("height at pilha of caixa1 is %d\n", pilha[caixa1_data[0]].h);
@@ -89,7 +91,11 @@ void ftirou(Caixa pilha[], int caixa1_data[], int p)
             if (i == caixa1_data[0]-1)
                 tirou_esq += pilha[i].h - caixa1_data[1];
             // printf("* tiro_dir=%d tiro_esq=%d\n", tirou_dir, tirou_esq);
-            tirou_esq += pilha[i-1].h -caixa1_data[1];
+            if (/*pilha[i-1].h != pilha[0].h && */pilha[i-1].h < n) { 
+                // printf("-----------pilha[i-1].h=%d caixa1_data[1]=%d\n", pilha[i-1].h, caixa1_data[1]);
+                // printf("-----------pilha[i-1].h - caixa1_data[1] =%d\n", pilha[i-1].h - caixa1_data[1]);
+                tirou_esq += pilha[i-1].h - caixa1_data[1];
+            }
             // printf("tiro_dir=%d tiro_esq=%d\n", tirou_dir, tirou_esq);
     
         }
@@ -102,26 +108,13 @@ void ftirou(Caixa pilha[], int caixa1_data[], int p)
             if (i == caixa1_data[0]+1)
                 tirou_dir += pilha[i].h - caixa1_data[1];
             // printf("init tiro_dir=%d tiro_esq=%d\n", tirou_dir, tirou_esq);
-            if ((i+1) != p)
+            if (/*i < p && */pilha[i+1].h < n)
                 tirou_dir += pilha[i+1].h - caixa1_data[1];
             // printf("taken %d from right side\n", tirou_dir);
     
         } 
        // printf("right side end taken %d boxes\n", tirou_dir);
-        (tirou_esq < tirou_dir) ? printf ("%d\n", tirou_esq) :  printf("%d\n",tirou_dir);
+        (tirou_esq < tirou_dir) ? printf ("%d\n", tirou_esq) :   printf("%d\n",tirou_dir);
     }
 
 }
-
-/* Casos para teste*/
-// 20 7 3 4 3 2 2 12 11 4 8 7 6 5 3 14 1 13 2 10 9 5 20 19 18 17 16 1 15 0 0
-// 20 7 3 4 3 2 2 12 11 4 8 7 6 5 3 14 13 1 2 10 9 5 20 19 18 17 16 1 15 0 0
-// 20 7 3 4 3 2 1 12 4 8 7 6 5 3 14 13 1 2 10 9 5 20 19 18 17 16 2 15 11
-//20 7 3 4 3 2 2 12 11 4 8 7 6 5 3 1 14 13 2 10 9 5 20 19 18 17 16 1 15
-//4 3 1 3 2 1 2 1 4
-//4 3 1 3 2 2 1 1 4
-/* Respectivas respostas */
-//6, 0, 0, 10, 2 e 0 respectivamente
-
-// 20 7 3 4 3 2 2 13 12 4 8 7 6 5 3 15 1 14 2 10 9 5 20 19 18 17 16 1 11 
-// R: 2
